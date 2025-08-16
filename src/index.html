@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -11,17 +10,19 @@
 
 <body>
   <section class="search-section">
-    <form id="search-form" class="search-form">
+    <form class="form">
       <input type="text" name="query" placeholder="Search images..." required />
       <button type="submit">Search</button>
     </form>
   </section>
 
-  <div class="loader hidden">Loading...</div>
+  <!-- loader обов’язково як <span> -->
+  <span class="loader hidden">Loading...</span>
+
   <ul class="gallery"></ul>
+
   <button class="load-more hidden">Load More</button>
 
   <script type="module" src="./main.js"></script>
 </body>
-
 </html>
