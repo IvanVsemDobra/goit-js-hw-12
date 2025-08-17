@@ -60,3 +60,13 @@ export function showLoadMoreButton() {
 export function hideLoadMoreButton() {
   loadMoreBtn.classList.add("hidden");
 }
+  export function smoothScroll() {
+  const { height: cardHeight } = document
+    .querySelector(".gallery")
+    .firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: "smooth",
+  });
+}
