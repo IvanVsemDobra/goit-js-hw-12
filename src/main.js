@@ -1,11 +1,11 @@
-import { getImages } from "./js/pixabay-api";
+import { getImagesByQuery } from "./js/pixabay-api";
 import {
   createGallery,
   clearGallery,
   showLoader,
   hideLoader,
-  showLoadMore,
-  hideLoadMore,
+  showLoadMoreButton,
+  hideLoadMoreButton,
   smoothScroll,
 } from "./js/render-functions";
 import iziToast from "izitoast";
@@ -32,11 +32,11 @@ async function onSearch(event) {
 
   page = 1;
   clearGallery();
-  hideLoadMore();
+  hideLoadMoreButton();
   showLoader();
 
   try {
-    const data = await getImages(query, page, per_page);
+    const data = await getImagesByQuery(query, page, per_page);
     totalHits = data.totalHits;
 
     if (totalHits === 0) {
@@ -47,7 +47,7 @@ async function onSearch(event) {
     createGallery(data.hits);
 
     if (totalHits > per_page) {
-      showLoadMore();
+      showLoadMoreButton();
     } else {
       iziToast.info({ message: "Ви досягли кінця результатів пошуку" });
     }
@@ -61,17 +61,17 @@ async function onSearch(event) {
 
 async function onLoadMore() {
   page += 1;
-  hideLoadMore();
+  hideLoadMoreButton();
   showLoader();
 
   try {
-    const data = await getImages(query, page, per_page);
+    const data = await getImagesByQuery(query, page, per_page);
     createGallery(data.hits);
     smoothScroll();
 
     const alreadyLoaded = page * per_page;
     if (alreadyLoaded < totalHits) {
-      showLoadMore();
+      showLoadMoreButton();
     } else {
       iziToast.info({ message: "Ви досягли кінця результатів пошуку" });
     }
