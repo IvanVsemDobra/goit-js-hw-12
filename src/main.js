@@ -1,4 +1,6 @@
-import { getImagesByQuery } from "./js/pixabay-api";
+import iziToast from "izitoast";
+import "izitoast/dist/css/iziToast.min.css";
+
 import {
   createGallery,
   clearGallery,
@@ -7,9 +9,9 @@ import {
   showLoadMoreButton,
   hideLoadMoreButton,
   smoothScroll,
-} from "./js/render-functions";
-import iziToast from "izitoast";
-import "izitoast/dist/css/iziToast.min.css";
+} from "./js/render-functions.js";
+
+import { getImagesByQuery } from "./js/pixabay-api.js";
 
 const form = document.querySelector(".form");
 const loadMoreBtn = document.querySelector(".load-more");
@@ -17,17 +19,15 @@ const loadMoreBtn = document.querySelector(".load-more");
 let query = "";
 let page = 1;
 const perPage = 15;
-let totalHits = 0;
 
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
-  query = e.target.elements.searchQuery.value.trim();
 
+  query = e.currentTarget.elements.query.value.trim();
   if (!query) {
     iziToast.warning({
       title: "Увага",
       message: "Введіть пошуковий запит!",
-      position: "topRight",
     });
     return;
   }
@@ -35,68 +35,64 @@ form.addEventListener("submit", async (e) => {
   page = 1;
   clearGallery();
   hideLoadMoreButton();
-  showLoader();
 
   try {
+    showLoader();
+
     const data = await getImagesByQuery(query, page, perPage);
-    totalHits = data.totalHits;
 
     if (data.hits.length === 0) {
       iziToast.info({
         title: "Немає результатів",
-        message: "Спробуйте інший запит.",
-        position: "topRight",
+        message: "Зображення за цим запитом не знайдено.",
       });
       return;
     }
 
     createGallery(data.hits);
 
-    if (page * perPage < totalHits) {
+    if (data.totalHits > perPage) {
       showLoadMoreButton();
-    } else {
-      iziToast.info({
-        title: "Кінець результатів",
-        message: "Більше зображень немає.",
-        position: "topRight",
-      });
     }
   } catch (error) {
     iziToast.error({
       title: "Помилка",
-      message: "Не вдалося завантажити зображення.",
-      position: "topRight",
+      message: "Не вдалося завантажити зображення. Спробуйте пізніше.",
     });
+    console.error(error);
   } finally {
     hideLoader();
+    form.reset();
   }
 });
 
 loadMoreBtn.addEventListener("click", async () => {
   page += 1;
   hideLoadMoreButton();
-  showLoader();
 
   try {
+    showLoader();
+
     const data = await getImagesByQuery(query, page, perPage);
+
     createGallery(data.hits);
     smoothScroll();
 
-    if (page * perPage < totalHits) {
+    const totalPages = Math.ceil(data.totalHits / perPage);
+    if (page < totalPages) {
       showLoadMoreButton();
     } else {
       iziToast.info({
         title: "Кінець результатів",
-        message: "Всі зображення вже завантажені.",
-        position: "topRight",
+        message: "Ви переглянули всі знайдені зображення.",
       });
     }
   } catch (error) {
     iziToast.error({
       title: "Помилка",
-      message: "Не вдалося завантажити додаткові зображення.",
-      position: "topRight",
+      message: "Не вдалося завантажити більше зображень.",
     });
+    console.error(error);
   } finally {
     hideLoader();
   }
