@@ -60,7 +60,8 @@ export function showLoadMoreButton() {
 export function hideLoadMoreButton() {
   loadMoreBtn.classList.add("hidden");
 }
-  export function smoothScroll() {
+
+export function smoothScroll() {
   const { height: cardHeight } = document
     .querySelector(".gallery")
     .firstElementChild.getBoundingClientRect();
